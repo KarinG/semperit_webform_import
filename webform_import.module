@@ -407,7 +407,22 @@ function _webform_import_import($form, $form_state, $file) {
             // Explode the value into an array and associate it back to the value.
             $v = explode(',', $v);
           }
-          $sub_array[$cid] = $v;
+          // KG
+	  $v_one = array_combine(range(1, count($v)), array_values($v));
+	  $newest_v = array();
+          // KG - Extract question keys
+          $i = 1;
+          $keywords = preg_split("/[\s,]+/", $keys[$fields[$cid]]['extra']['questions']);
+          foreach ($keywords as $bit) {
+            if (strpos($bit, '|') !== false) {
+              $pos = strpos($bit, '|');
+              $qkey = substr($bit, 0, $pos);
+              $newest_v[$qkey] = $v_one[$i];
+              $i = $i + 1;
+	    }
+	  }
+
+          $sub_array[$cid] = $newest_v;
         }
       }
 
