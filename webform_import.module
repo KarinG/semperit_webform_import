@@ -406,23 +406,19 @@ function _webform_import_import($form, $form_state, $file) {
           elseif ($type === 'grid' || ($type === 'select' && $keys[$fields[$k]]['extra']['multiple'] == 1)) {
             // Explode the value into an array and associate it back to the value.
             $v = explode(',', $v);
-          }
-          // KG
-	  $v_one = array_combine(range(1, count($v)), array_values($v));
-	  $newest_v = array();
-          // KG - Extract question keys
-          $i = 1;
-          $keywords = preg_split("/[\s,]+/", $keys[$fields[$cid]]['extra']['questions']);
-          foreach ($keywords as $bit) {
-            if (strpos($bit, '|') !== false) {
-              $pos = strpos($bit, '|');
-              $qkey = substr($bit, 0, $pos);
-              $newest_v[$qkey] = $v_one[$i];
-              $i = $i + 1;
-	    }
-	  }
 
-          $sub_array[$cid] = $newest_v;
+            if (!empty($keys[$fields[$k]]['extra']['questions'])) {
+              $questions = explode("\n", trim($keys[$fields[$k]]['extra']['questions']));
+              $qkeys = array();
+              foreach ($questions as $q) {
+                list($qkey, $qstring) = explode('|', $q);
+                $qkeys[] = $qkey;
+              }
+              $v = array_combine($qkeys, $v);
+            }
+          }
+
+          $sub_array[$cid] = $v;
         }
       }
 
